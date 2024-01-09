@@ -1,7 +1,13 @@
-# Project khoi map ..
+# Installation
 
-## Features
+Run line by line:
 
-- [x] Connect database [Supabase](https://supabase.com/dashboard/project/vkyeksvkabebypukwbpk) which using PostgreSQL. Contact [Pi nè](https://github.com/Wanbicoi) to add you in =))
-- [x] Swagger
-- [x] Authentication
+```bash
+yarn
+
+yarn prisma generate
+
+yarn seed
+
+yarn start:dev
+```
