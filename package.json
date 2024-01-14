@@ -10,8 +10,8 @@
     "build": "nest build && prisma generate",
     "postinstall": "prisma generate",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start": "nest start --watch",
+    "start:dev": "nest start",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -30,11 +30,16 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.14",
     "@prisma/client": "^5.4.2",
+    "@speakbox/nestjs-firebase-admin": "^3.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "firebase-admin": "^12.0.0",
     "nodemailer": "^6.9.7",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "short-uuid": "^4.2.2",
+    "string-width": "^7.0.0",
+    "wrap-ansi": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

@@ -9,12 +9,16 @@ datasource db {
 
 model User {
   id         Int @id @default(autoincrement())
+  uid        String  @unique // firebase uid 
+
   name       String
   bio        String?
   imageUrl   String?
 
   foods      Food[]
   comments   Comment[]
+
+  favouriteFoods Food[] @relation(name: "UserFavouriteFoods")
 }
 
 model Food {
@@ -27,6 +31,8 @@ model Food {
   authorId       Int
   comments       Comment[]
   createdAt      DateTime  @default(now())
+
+  likers         User[] @relation(name: "UserFavouriteFoods")
 }
 
 model Comment {

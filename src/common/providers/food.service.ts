@@ -7,13 +7,28 @@ export class FoodService {
   constructor(private readonly prisma: PrismaService) {}
   async findOne(
     productWhereUniqueInput: Prisma.FoodWhereUniqueInput,
-  ): Promise<Food | null> {
-    return this.prisma.food.findUniqueOrThrow({
+  ): Promise<any> {
+    const res = await this.prisma.food.findUniqueOrThrow({
+      include: {
+        comments: true,
+        author: true,
+        categories: true,
+        likers: { select: { _count: true } }, // return number only
+      },
       where: productWhereUniqueInput,
     });
+    return { ...res };
   }
   create(data: Prisma.FoodCreateInput) {
     return this.prisma.food.create({ data });
+  }
+
+  async findFavourites(userId: number) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { favouriteFoods: true },
+    });
+    return user.favouriteFoods;
   }
 
   findAll(skip: number, take: number, search: string, order: 'asc' | 'desc') {
@@ -45,5 +60,26 @@ export class FoodService {
 
   remove(where: Prisma.FoodWhereUniqueInput) {
     return this.prisma.food.delete({ where });
+  }
+
+  like(where: Prisma.FoodWhereUniqueInput, userId: number) {
+    return this.prisma.food.update({
+      where,
+      data: {
+        likers: {
+          connect: { id: userId },
+        },
+      },
+    });
+  }
+
+  comment(where: Prisma.FoodWhereUniqueInput, userId: number, body: string) {
+    return this.prisma.comment.create({
+      data: {
+        body,
+        author: { connect: { id: userId } },
+        food: { connect: { id: where.id } },
+      },
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LogInDto } from './log-in.dto';
+import { AuthDto } from './auth.dto';
 import { Public } from 'src/decorators/public.decorator';
 
 @ApiTags('auth')
@@ -10,8 +10,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post()
-  logIn(@Body() logInDto: LogInDto) {
-    return this.authService.logIn(logInDto.userName, logInDto.password);
+  @Post('sign-in')
+  signIn(@Body() logInDto: AuthDto) {
+    return this.authService.signIn(logInDto.idToken);
   }
 }

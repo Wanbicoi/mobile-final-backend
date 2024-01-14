@@ -3,8 +3,23 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { PrismaExceptionFilter } from './filters';
+import * as admin from 'firebase-admin';
+import { client_email, private_key, project_id } from './fooder.json';
 
 async function bootstrap() {
+  // var serviceAccount = require('./fooder.json');
+  //
+  // admin.initializeApp({
+  //   credential: admin.credential.cert(serviceAccount),
+  // });
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      clientEmail: client_email,
+      projectId: project_id,
+      privateKey: private_key,
+    }),
+  });
+
   const app = await NestFactory.create(AppModule);
   app.enableCors();
 

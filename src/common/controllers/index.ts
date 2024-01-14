@@ -1,3 +1,3 @@
 export * from './category.controller';
 export * from './food.controller';
-export * from './comment.controller';
+export * from './profile.controller';

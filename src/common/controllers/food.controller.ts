@@ -11,7 +11,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { CreateFoodDto, UpdateBlogDto } from 'src/common/dtos';
+import {
+  CreateCommentDto,
+  CreateFoodDto,
+  UpdateBlogDto,
+} from 'src/common/dtos';
 import { FoodService } from 'src/common/providers';
 import { User } from 'src/decorators';
 import { Public } from 'src/decorators/public.decorator';
@@ -45,6 +49,11 @@ export class BlogController {
     return this.foodservice.findAll(skip, take, search, order);
   }
 
+  @Get('favourites')
+  findFavourites(@User('id') userId: number) {
+    return this.foodservice.findFavourites(userId);
+  }
+
   @Public()
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
@@ -64,5 +73,21 @@ export class BlogController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.foodservice.remove({ id });
+  }
+
+  @ApiBearerAuth('defaultBearerAuth')
+  @Post(':id/like')
+  like(@Param('id', ParseIntPipe) id: number, @User('id') userId: number) {
+    return this.foodservice.like({ id }, userId);
+  }
+
+  @ApiBearerAuth('defaultBearerAuth')
+  @Post(':id/comment')
+  comment(
+    @Param('id', ParseIntPipe) id: number,
+    @User('id') userId: number,
+    @Body() commentDto: CreateCommentDto,
+  ) {
+    return this.foodservice.comment({ id }, userId, commentDto.body);
   }
 }

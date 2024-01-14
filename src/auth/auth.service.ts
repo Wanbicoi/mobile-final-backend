@@ -1,21 +1,29 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import short from 'short-uuid';
+import { PrismaService } from 'src/database';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private configService: ConfigService,
+    private readonly prisma: PrismaService,
   ) {}
-  async logIn(userName: string, password: string) {
-    if (
-      userName == this.configService.get('ADMIN_USERNAME') &&
-      password == this.configService.get('ADMIN_PASSWORD')
-    )
-      return {
-        accessToken: await this.jwtService.signAsync({}),
-      };
-    else throw new BadRequestException('userName or password are invalid!');
+  async signIn(idToken: string) {
+    try {
+      const { uid } = await admin.auth().verifyIdToken(idToken);
+
+      const existingUser = await this.prisma.user.findFirst({
+        where: { uid: idToken },
+      });
+      if (!existingUser)
+        await this.prisma.user.create({
+          data: { uid, name: 'user_' + short.generate() },
+        });
+      return this.jwtService.signAsync({ sub: uid });
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 }
