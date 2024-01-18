@@ -19,14 +19,33 @@ model User {
   comments   Comment[]
 
   favouriteFoods Food[] @relation(name: "UserFavouriteFoods")
+  favouriteFoodLists FoodList[] @relation(name: "UserFavouriteFoodLists")
+}
+
+model FoodList {
+  id             Int    @id @default(autoincrement())
+  title          String
+  description    String
+  foods          Food[]
+
+  likers         User[] @relation(name: "UserFavouriteFoodLists")
+}
+model FoodImage {
+  id             Int    @id @default(autoincrement())
+  food           Food   @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId         Int
+  url            String
 }
 
 model Food {
   id             Int    @id @default(autoincrement())
   categories     Category[]
+  list           FoodList[]
+
   title          String
   body           String
-  imageUrls      String @default("[]")
+  images         FoodImage[]
+
   author         User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId       Int
   comments       Comment[]
@@ -50,3 +69,4 @@ model Category {
   name String    @id
   food Food[]
 }
+

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { Food, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database';
-import { Prisma, Food } from '@prisma/client';
+import { UpdateBlogDto } from '../dtos';
 
 @Injectable()
 export class FoodService {
@@ -13,14 +14,16 @@ export class FoodService {
         comments: true,
         author: true,
         categories: true,
-        likers: { select: { _count: true } }, // return number only
+        _count: { select: { likers: true } },
       },
       where: productWhereUniqueInput,
     });
-    return { ...res };
+    return { ...res, likers_count: res._count.likers, _count: undefined };
   }
-  create(data: Prisma.FoodCreateInput) {
-    return this.prisma.food.create({ data });
+  create(data: Omit<Prisma.FoodCreateInput, 'author'>, userId: number) {
+    return this.prisma.food.create({
+      data: { ...data, author: { connect: { id: userId } } },
+    });
   }
 
   async findFavourites(userId: number) {
@@ -39,6 +42,7 @@ export class FoodService {
           // mode: 'insensitive',
         },
       },
+      include: { images: { select: { url: true } } },
       orderBy: {
         createdAt: order,
       },
@@ -50,11 +54,11 @@ export class FoodService {
 
   async update(
     where: Prisma.FoodWhereUniqueInput,
-    data: Prisma.FoodUpdateInput,
+    data: UpdateBlogDto,
   ): Promise<Food> {
     return this.prisma.food.update({
       where,
-      data,
+      data: { ...data, images: { deleteMany: {}, create: data.images } },
     });
   }
 
@@ -62,12 +66,12 @@ export class FoodService {
     return this.prisma.food.delete({ where });
   }
 
-  like(where: Prisma.FoodWhereUniqueInput, userId: number) {
+  like(where: Prisma.FoodWhereUniqueInput, liked: boolean, userId: number) {
     return this.prisma.food.update({
       where,
       data: {
         likers: {
-          connect: { id: userId },
+          [liked ? 'connect' : 'disconnect']: { id: userId },
         },
       },
     });

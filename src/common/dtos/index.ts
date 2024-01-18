@@ -4,3 +4,4 @@ export * from './create-food.dto';
 export * from './update-food.dto';
 export * from './create-comment.dto';
 export * from './update-profile.dto';
+export * from './boolean.dto';

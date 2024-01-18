@@ -35,7 +35,16 @@ async function main() {
       data: {
         title: 'Delicious Dish',
         body: 'This is a tasty dish!',
-        imageUrls: '["dish_image_url"]',
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357',
+            },
+            {
+              url: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357',
+            },
+          ],
+        },
         authorId: users[0].id,
       },
     }),
@@ -43,7 +52,16 @@ async function main() {
       data: {
         title: 'Vegan Delight',
         body: 'Amazing vegan recipe!',
-        imageUrls: '["vegan_image_url"]',
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357',
+            },
+            {
+              url: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg',
+            },
+          ],
+        },
         authorId: users[1].id,
       },
     }),
@@ -62,6 +80,23 @@ async function main() {
       data: { body: 'Yummy!', authorId: users[0].id, foodId: foods[1].id },
     }),
     // Add more comments as needed
+  ]);
+
+  await Promise.all([
+    prisma.foodList.create({
+      data: {
+        title: 'Popular foods',
+        description: 'Popular foods',
+        foods: { connect: [{ id: 1 }, { id: 2 }] },
+      },
+    }),
+    prisma.foodList.create({
+      data: {
+        title: 'Most views foods',
+        description: 'Most views foods',
+        foods: { connect: [{ id: 1 }, { id: 2 }] },
+      },
+    }),
   ]);
 
   console.log('Seed data inserted successfully');

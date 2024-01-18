@@ -10,8 +10,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post('sign-in')
-  signIn(@Body() logInDto: AuthDto) {
-    return this.authService.signIn(logInDto.idToken);
+  @Post()
+  auth(@Body() autoDto: AuthDto) {
+    return this.authService.auth(autoDto.idToken);
+  }
+
+  @Public()
+  @Post('test')
+  authTest() {
+    return this.authService.authTest();
   }
 }

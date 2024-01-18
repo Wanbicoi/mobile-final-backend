@@ -10,7 +10,7 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly prisma: PrismaService,
   ) {}
-  async signIn(idToken: string) {
+  async auth(idToken: string) {
     try {
       const { uid } = await admin.auth().verifyIdToken(idToken);
 
@@ -21,9 +21,17 @@ export class AuthService {
         await this.prisma.user.create({
           data: { uid, name: 'user_' + short.generate() },
         });
-      return this.jwtService.signAsync({ sub: uid });
+      return {
+        access_token: this.jwtService.signAsync({ sub: existingUser.id }),
+      };
     } catch (e) {
       throw new BadRequestException(e);
     }
+  }
+  async authTest() {
+    const user = await this.prisma.user.findUnique({
+      where: { uid: ';lkasjdfa;kj' },
+    });
+    return this.jwtService.signAsync({ sub: user.id });
   }
 }

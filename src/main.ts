@@ -7,11 +7,6 @@ import * as admin from 'firebase-admin';
 import { client_email, private_key, project_id } from './fooder.json';
 
 async function bootstrap() {
-  // var serviceAccount = require('./fooder.json');
-  //
-  // admin.initializeApp({
-  //   credential: admin.credential.cert(serviceAccount),
-  // });
   admin.initializeApp({
     credential: admin.credential.cert({
       clientEmail: client_email,
@@ -53,7 +48,7 @@ async function bootstrap() {
             bearerFormat: 'JWT',
           },
           value:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDQ3ODgzNjF9.VRHyst9b9t0NK4ZPODi20UEVNV1iObNl0w1Yoc2NDnw',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTcwNTMwNzIxOH0.AvbXqMdlqHf273Iv-7aYSF1_YFa3LYOK_17avHyIFEo',
         },
       },
     },

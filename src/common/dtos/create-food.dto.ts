@@ -12,7 +12,7 @@ export class CreateFoodDto {
   body: string;
 
   // prettier-ignore
-  @ApiProperty({ example: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357', })
+  @ApiProperty({ example: [{url: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357'}], })
   @IsNotEmpty()
-  imageUrls: string;
+  images: {url: string}[];
 }

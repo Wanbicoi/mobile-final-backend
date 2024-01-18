@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
+  BooleanDto,
   CreateCommentDto,
   CreateFoodDto,
   UpdateBlogDto,
@@ -22,16 +23,16 @@ import { Public } from 'src/decorators/public.decorator';
 
 @ApiTags('foods')
 @Controller('foods')
-export class BlogController {
+@ApiBearerAuth('defaultBearerAuth')
+export class FoodController {
   constructor(private readonly foodservice: FoodService) {}
 
-  @ApiBearerAuth('defaultBearerAuth')
   @Post()
   create(@Body() createFoodDto: CreateFoodDto, @User() userId: number) {
-    return this.foodservice.create({
-      ...createFoodDto,
-      author: { connect: { id: userId } },
-    });
+    return this.foodservice.create(
+      { ...createFoodDto, images: { create: createFoodDto.images } },
+      userId,
+    );
   }
 
   @ApiQuery({ name: 'skip', required: false })
@@ -60,7 +61,6 @@ export class BlogController {
     return this.foodservice.findOne({ id });
   }
 
-  @ApiBearerAuth('defaultBearerAuth')
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -69,19 +69,20 @@ export class BlogController {
     return this.foodservice.update({ id }, updateBlogDto);
   }
 
-  @ApiBearerAuth('defaultBearerAuth')
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.foodservice.remove({ id });
   }
 
-  @ApiBearerAuth('defaultBearerAuth')
   @Post(':id/like')
-  like(@Param('id', ParseIntPipe) id: number, @User('id') userId: number) {
-    return this.foodservice.like({ id }, userId);
+  like(
+    @Param('id', ParseIntPipe) id: number,
+    @User('id') userId: number,
+    @Body() booleanDto: BooleanDto,
+  ) {
+    return this.foodservice.like({ id }, booleanDto.value, userId);
   }
 
-  @ApiBearerAuth('defaultBearerAuth')
   @Post(':id/comment')
   comment(
     @Param('id', ParseIntPipe) id: number,

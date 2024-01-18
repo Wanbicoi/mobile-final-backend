@@ -12,4 +12,9 @@ export class ProfileService {
   ) {
     await this.prisma.user.update({ where, data });
   }
+
+  async view(userId: number) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    return { ...user, uid: undefined };
+  }
 }
