@@ -1,28 +1,27 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import short from 'short-uuid';
+import { FirebaseAdmin, InjectFirebaseAdmin } from 'nestjs-firebase';
 import { PrismaService } from 'src/database';
-import * as admin from 'firebase-admin';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private readonly prisma: PrismaService,
+    @InjectFirebaseAdmin() private readonly firebase: FirebaseAdmin,
   ) {}
   async auth(idToken: string) {
     try {
-      const { uid } = await admin.auth().verifyIdToken(idToken);
-
-      const existingUser = await this.prisma.user.findFirst({
-        where: { uid: idToken },
+      const { uid, email } = await this.firebase.auth.verifyIdToken(idToken);
+      let existingUser = await this.prisma.user.findFirst({
+        where: { uid: uid },
       });
       if (!existingUser)
-        await this.prisma.user.create({
-          data: { uid, name: 'user_' + short.generate() },
+        existingUser = await this.prisma.user.create({
+          data: { uid, name: email },
         });
       return {
-        access_token: this.jwtService.signAsync({ sub: existingUser.id }),
+        accessToken: await this.jwtService.signAsync({ sub: existingUser.id }),
       };
     } catch (e) {
       throw new BadRequestException(e);

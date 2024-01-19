@@ -1,10 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class UpdateProfileDto {
-  @ApiProperty({ example: 'Trung' })
+  @ApiPropertyOptional({ example: 'Trung' })
+  @IsOptional()
   name: string;
-  @ApiProperty({ example: 'Trung' })
+
+  @ApiPropertyOptional({ example: 'Trung' })
+  @IsOptional()
   bio: string;
-  @ApiProperty({ example: 'Trung' })
+
+  @ApiPropertyOptional({ example: 'Trung' })
+  @IsOptional()
   imageUrl: string;
 }
