@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
-  await Promise.all([
-    prisma.category.create({ data: { name: 'Vegetarian' } }),
-    prisma.category.create({ data: { name: 'Vegan' } }),
-    prisma.category.create({ data: { name: 'Dessert' } }),
-    // Add more categories as needed
-  ]);
+  // await Promise.all([
+  //   prisma.category.create({ data: { name: 'Vegetarian' } }),
+  //   prisma.category.create({ data: { name: 'Vegan' } }),
+  //   prisma.category.create({ data: { name: 'Dessert' } }),
+  //   // Add more categories as needed
+  // ]);
 
   // Seed users
   const users = await Promise.all([
@@ -35,16 +35,11 @@ async function main() {
       data: {
         title: 'Delicious Dish',
         body: 'This is a tasty dish!',
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357',
-            },
-            {
-              url: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357',
-            },
-          ],
-        },
+        images: [
+          'https://loremflickr.com/320/240/food',
+          'https://loremflickr.com/320/240/food',
+          'https://loremflickr.com/320/240/food',
+        ],
         authorId: users[0].id,
       },
     }),
@@ -52,16 +47,12 @@ async function main() {
       data: {
         title: 'Vegan Delight',
         body: 'Amazing vegan recipe!',
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357',
-            },
-            {
-              url: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg',
-            },
-          ],
-        },
+        images: [
+          'https://loremflickr.com/320/240/food',
+          'https://loremflickr.com/320/240/food',
+          'https://loremflickr.com/320/240/food',
+        ],
+
         authorId: users[1].id,
       },
     }),

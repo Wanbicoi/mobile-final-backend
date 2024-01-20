@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = "postgres://ubbkyqpl:rcJWnAe_zyge7WYpwhzTiEQi4y9ZpVyz@john.db.elephantsql.com/ubbkyqpl"
 }
 
 model User {
@@ -30,12 +30,6 @@ model FoodList {
 
   likers         User[] @relation(name: "UserFavouriteFoodLists")
 }
-model FoodImage {
-  id             Int    @id @default(autoincrement())
-  food           Food   @relation(fields: [foodId], references: [id], onDelete: Cascade)
-  foodId         Int
-  url            String
-}
 
 model Food {
   id             Int    @id @default(autoincrement())
@@ -44,7 +38,12 @@ model Food {
 
   title          String
   body           String
-  images         FoodImage[]
+
+  images         Json @default("[]")
+
+  ingredients    Json @default("[]")
+  recipe         Json @default("[]")
+  nutrition_fact Json @default("{}")
 
   author         User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId       Int

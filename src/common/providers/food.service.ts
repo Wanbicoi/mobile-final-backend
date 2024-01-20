@@ -42,7 +42,6 @@ export class FoodService {
           // mode: 'insensitive',
         },
       },
-      include: { images: { select: { url: true } } },
       orderBy: {
         createdAt: order,
       },
@@ -58,7 +57,7 @@ export class FoodService {
   ): Promise<Food> {
     return this.prisma.food.update({
       where,
-      data: { ...data, images: { deleteMany: {}, create: data.images } },
+      data,
     });
   }
 

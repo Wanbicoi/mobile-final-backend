@@ -30,7 +30,14 @@ export class FoodController {
   @Post()
   create(@Body() createFoodDto: CreateFoodDto, @User() userId: number) {
     return this.foodservice.create(
-      { ...createFoodDto, images: { create: createFoodDto.images } },
+      {
+        ...createFoodDto,
+        categories: {
+          connect: createFoodDto.categories.map((category) => ({
+            name: category,
+          })),
+        },
+      },
       userId,
     );
   }
