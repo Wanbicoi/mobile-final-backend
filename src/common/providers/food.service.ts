@@ -8,6 +8,7 @@ export class FoodService {
   constructor(private readonly prisma: PrismaService) {}
   async findOne(
     productWhereUniqueInput: Prisma.FoodWhereUniqueInput,
+    userId: number,
   ): Promise<any> {
     const res = await this.prisma.food.findUniqueOrThrow({
       include: {
@@ -15,10 +16,17 @@ export class FoodService {
         author: true,
         categories: true,
         _count: { select: { likers: true } },
+        likers: { where: { id: userId } },
       },
       where: productWhereUniqueInput,
     });
-    return { ...res, likers_count: res._count.likers, _count: undefined };
+    return {
+      ...res,
+      likers_count: res._count.likers,
+      isFavourite: res.likers.length != 0,
+      _count: undefined,
+      likers: undefined,
+    };
   }
   create(data: Omit<Prisma.FoodCreateInput, 'author'>, userId: number) {
     return this.prisma.food.create({
@@ -34,13 +42,20 @@ export class FoodService {
     return user.favouriteFoods;
   }
 
-  findAll(skip: number, take: number, search: string, order: 'asc' | 'desc') {
+  findAll(
+    skip: number,
+    take: number,
+    search: string,
+    order: 'asc' | 'desc',
+    category: string,
+  ) {
     const query: Prisma.FoodFindManyArgs = {
       where: {
         title: {
           contains: search,
           // mode: 'insensitive',
         },
+        categories: { some: { name: { equals: category } } },
       },
       orderBy: {
         createdAt: order,

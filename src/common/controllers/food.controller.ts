@@ -46,6 +46,7 @@ export class FoodController {
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'order', required: false, example: 'asc' })
+  @ApiQuery({ name: 'category', required: false, example: 'hello' })
   @Public()
   @Get()
   findAll(
@@ -53,8 +54,9 @@ export class FoodController {
     @Query('take', new DefaultValuePipe(20), ParseIntPipe) take: number,
     @Query('search') search: string,
     @Query('order', new DefaultValuePipe('asc')) order: 'asc' | 'desc',
+    @Query('category') category: string,
   ) {
-    return this.foodservice.findAll(skip, take, search, order);
+    return this.foodservice.findAll(skip, take, search, order, category);
   }
 
   @Get('favourites')
@@ -64,8 +66,8 @@ export class FoodController {
 
   @Public()
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.foodservice.findOne({ id });
+  findOne(@Param('id', ParseIntPipe) id: number, @User() userId: number) {
+    return this.foodservice.findOne({ id }, userId);
   }
 
   @Patch(':id')
