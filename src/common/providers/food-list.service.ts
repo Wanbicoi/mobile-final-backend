@@ -9,9 +9,29 @@ export class FoodListService {
   findAll() {
     return this.prisma.foodList.findMany({
       include: {
-        foods: true,
+        foods: {
+          select: { id: true, title: true, images: true, body: true },
+        },
       },
     });
+  }
+  async findOne(where: Prisma.FoodListWhereUniqueInput, userId: number) {
+    const foodList = await this.prisma.foodList.findUniqueOrThrow({
+      where,
+      include: {
+        foods: {
+          select: { id: true, title: true, images: true, body: true },
+        },
+        author: { select: { id: true, name: true, imageUrl: true } },
+        likers: { where: { id: userId } },
+      },
+    });
+
+    return {
+      ...foodList,
+      likers: undefined,
+      isFavourite: foodList.likers.length != 0,
+    };
   }
 
   async findFavourites(userId: number) {
@@ -20,7 +40,9 @@ export class FoodListService {
       select: {
         favouriteFoodLists: {
           include: {
-            foods: true,
+            foods: {
+              select: { id: true, title: true, images: true, body: true },
+            },
           },
         },
       },

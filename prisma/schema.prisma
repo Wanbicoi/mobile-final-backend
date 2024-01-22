@@ -20,15 +20,21 @@ model User {
 
   favouriteFoods Food[] @relation(name: "UserFavouriteFoods")
   favouriteFoodLists FoodList[] @relation(name: "UserFavouriteFoodLists")
+  
+  foodLists  FoodList[]
 }
 
 model FoodList {
   id             Int    @id @default(autoincrement())
   title          String
   description    String
+  imageUrl       String @default("https://loremflickr.com/320/320/animal")
   foods          Food[]
 
   likers         User[] @relation(name: "UserFavouriteFoodLists")
+
+  author         User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId       Int
 }
 
 model Food {
