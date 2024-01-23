@@ -22,7 +22,19 @@ export class FoodListService {
         foods: {
           select: { id: true, title: true, images: true, body: true },
         },
-        author: { select: { id: true, name: true, imageUrl: true } },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            imageUrl: true,
+            _count: {
+              select: {
+                followers: true,
+                following: true,
+              },
+            },
+          },
+        },
         likers: { where: { id: userId } },
       },
     });
@@ -31,6 +43,11 @@ export class FoodListService {
       ...foodList,
       likers: undefined,
       isFavourite: foodList.likers.length != 0,
+      author: {
+        ...foodList.author,
+        _count: undefined,
+        ...foodList.author._count,
+      },
     };
   }
 

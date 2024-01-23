@@ -17,6 +17,8 @@ export class ProfileService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
+        foods: { select: { id: true, title: true, images: true, body: true } },
+        foodLists: true,
         _count: {
           select: {
             followers: true,
