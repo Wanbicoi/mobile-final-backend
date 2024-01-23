@@ -69,6 +69,7 @@ model Food {
   createdAt      DateTime  @default(now())
 
   likers         User[] @relation(name: "UserFavouriteFoods")
+  isPublic       Boolean @default(true)
 }
 
 model Comment {

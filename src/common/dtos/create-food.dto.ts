@@ -34,4 +34,8 @@ export class CreateFoodDto {
   })
   @IsOptional()
   categories: string[];
+
+  @ApiPropertyOptional({ example: true })
+  @IsOptional()
+  isPublic: boolean;
 }

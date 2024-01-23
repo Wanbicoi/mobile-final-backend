@@ -47,7 +47,6 @@ export class FoodController {
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'order', required: false, example: 'asc' })
   @ApiQuery({ name: 'category', required: false, example: 'hello' })
-  @Public()
   @Get()
   findAll(
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
@@ -64,9 +63,8 @@ export class FoodController {
     return this.foodservice.findFavourites(userId);
   }
 
-  @Public()
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number, @User() userId: number) {
+  findOne(@User() userId: number, @Param('id', ParseIntPipe) id: number) {
     return this.foodservice.findOne({ id }, userId);
   }
 
