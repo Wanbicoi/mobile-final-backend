@@ -29,8 +29,7 @@ export class ProfileService {
       ...user,
       uid: undefined,
       _count: undefined,
-      followers: user._count.followers,
-      followings: user._count.following,
+      ...user._count,
     };
   }
 
