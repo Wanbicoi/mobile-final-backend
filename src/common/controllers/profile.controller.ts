@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ProfileService } from 'src/common/providers';
 import { User } from 'src/decorators';
-import { UpdateProfileDto } from '../dtos';
+import { FollowDto, UpdateProfileDto } from '../dtos';
 
 @ApiTags('profile')
 @Controller('profile')
@@ -16,6 +16,15 @@ export class ProfileController {
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     return this.profileService.update({ id: userId }, updateProfileDto);
+  }
+
+  @Post('follow')
+  follow(@User() userId: number, @Body() followDto: FollowDto) {
+    return this.profileService.follow(
+      followDto.targetId,
+      followDto.follow,
+      userId,
+    );
   }
 
   @Get()

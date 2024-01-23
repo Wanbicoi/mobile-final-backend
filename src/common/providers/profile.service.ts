@@ -14,7 +14,44 @@ export class ProfileService {
   }
 
   async view(userId: number) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    return { ...user, uid: undefined };
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+          },
+        },
+      },
+    });
+    return {
+      ...user,
+      uid: undefined,
+      _count: undefined,
+      followers: user._count.followers,
+      followings: user._count.following,
+    };
+  }
+
+  async follow(targetId: number, follow: boolean, userId: number) {
+    const user = await this.prisma.follows.findUnique({
+      where: {
+        followerId_followingId: { followingId: targetId, followerId: userId },
+      },
+    });
+    if (!follow && user)
+      await this.prisma.follows.delete({
+        where: {
+          followerId_followingId: { followingId: targetId, followerId: userId },
+        },
+      });
+    else if (follow && !user)
+      await this.prisma.follows.create({
+        data: {
+          followingId: targetId,
+          followerId: userId,
+        },
+      });
   }
 }
