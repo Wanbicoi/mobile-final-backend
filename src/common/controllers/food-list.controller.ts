@@ -24,14 +24,14 @@ export class FoodListController {
     return this.foodListService.findAll();
   }
 
+  @Get('favourites')
+  findFavourites(@User() userId: number) {
+    return this.foodListService.findFavourites(userId);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @User('id') userId: number) {
     return this.foodListService.findOne({ id }, userId);
-  }
-
-  @Get('favourites')
-  findFavourites(@User('id') userId: number) {
-    return this.foodListService.findFavourites(userId);
   }
 
   @Post(':id/like')
