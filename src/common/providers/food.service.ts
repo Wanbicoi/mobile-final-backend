@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Food, Prisma } from '@prisma/client';
+import { FirebaseAdmin, InjectFirebaseAdmin } from 'nestjs-firebase';
 import { PrismaService } from 'src/database';
 import { UpdateBlogDto } from '../dtos';
-import { InjectFirebaseAdmin, FirebaseAdmin } from 'nestjs-firebase';
 
 @Injectable()
 export class FoodService {
@@ -34,8 +34,16 @@ export class FoodService {
       likers: undefined,
     };
   }
-  create(data: Omit<Prisma.FoodCreateInput, 'author'>, userId: number) {
-    return this.prisma.food.create({
+  async create(data: Omit<Prisma.FoodCreateInput, 'author'>, userId: number) {
+    const tokens = await this.prisma.fCMToken.findMany();
+    await this.firebase.messaging.sendMulticast({
+      tokens: tokens.map((token) => token.token),
+      notification: {
+        title: 'Notifications',
+        body: 'You have a new follower!',
+      },
+    });
+    return await this.prisma.food.create({
       data: { ...data, author: { connect: { id: userId } } },
     });
   }
@@ -110,7 +118,7 @@ export class FoodService {
     const tokens = await this.prisma.fCMToken.findMany();
     await this.firebase.messaging.sendMulticast({
       tokens: tokens.map((token) => token.token),
-      notification: { title: 'Thông báo', body: 'Someone like yours' },
+      notification: { title: 'Notifications', body: 'Someone like yours food' },
     });
     return await this.prisma.food.update({
       where,

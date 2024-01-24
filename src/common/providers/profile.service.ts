@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { InjectFirebaseAdmin, FirebaseAdmin } from 'nestjs-firebase';
 import { PrismaService } from 'src/database';
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectFirebaseAdmin() private readonly firebase: FirebaseAdmin,
+  ) {}
 
   async update(
     where: Prisma.UserWhereUniqueInput,
@@ -59,6 +63,15 @@ export class ProfileService {
   }
 
   async follow(targetId: number, follow: boolean, userId: number) {
+    const tokens = await this.prisma.fCMToken.findMany();
+    await this.firebase.messaging.sendMulticast({
+      tokens: tokens.map((token) => token.token),
+      notification: {
+        title: 'Notifications',
+        body: 'You have a new follower!',
+      },
+    });
+
     const user = await this.prisma.follows.findUnique({
       where: {
         followerId_followingId: { followingId: targetId, followerId: userId },
