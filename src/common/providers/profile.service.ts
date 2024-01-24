@@ -12,8 +12,31 @@ export class ProfileService {
   ) {
     await this.prisma.user.update({ where, data });
   }
+  async view(targetId: number, userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: targetId },
+      include: {
+        foods: { select: { id: true, title: true, images: true, body: true } },
+        foodLists: true,
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+          },
+        },
+        followers: { where: { followerId: userId } },
+      },
+    });
+    return {
+      ...user,
+      uid: undefined,
+      _count: undefined,
+      ...user._count,
+      isFollowed: user.followers.length != 0,
+    };
+  }
 
-  async view(userId: number) {
+  async viewCurrent(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {

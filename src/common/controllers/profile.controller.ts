@@ -27,21 +27,22 @@ export class ProfileController {
   }
 
   @Post('follow')
-  follow(@User() userId: number, @Body() followDto: FollowDto) {
-    return this.profileService.follow(
+  async follow(@User() userId: number, @Body() followDto: FollowDto) {
+    await this.profileService.follow(
       followDto.targetId,
       followDto.follow,
       userId,
     );
+    return {};
   }
 
   @Get()
   view(@User() userId: number) {
-    return this.profileService.view(userId);
+    return this.profileService.viewCurrent(userId);
   }
 
   @Get(':id')
-  get(@Param('id', ParseIntPipe) userId: number) {
-    return this.profileService.view(userId);
+  get(@Param('id', ParseIntPipe) targetId: number, @User() userId: number) {
+    return this.profileService.view(targetId, userId);
   }
 }

@@ -12,7 +12,9 @@ export class FoodService {
   ): Promise<any> {
     const res = await this.prisma.food.findUniqueOrThrow({
       include: {
-        comments: true,
+        comments: {
+          include: { author: { select: { imageUrl: true, name: true } } },
+        },
         author: true,
         categories: true,
         _count: { select: { likers: true } },
