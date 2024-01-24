@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = "postgres://ubbkyqpl:rcJWnAe_zyge7WYpwhzTiEQi4y9ZpVyz@john.db.elephantsql.com/ubbkyqpl"
+  //url      = "postgres://zawxxwlj:zBRHWaFIkaKRY3ZHfmAgIz9yDm88xHP-@tiny.db.elephantsql.com/zawxxwlj"
 }
 
 model User {
@@ -25,6 +26,16 @@ model User {
 
   followers Follows[] @relation("following")
   following Follows[] @relation("follower")
+
+  fcmTokens FCMToken[]
+}
+
+model FCMToken {
+  id         Int @id @default(autoincrement())
+  token      String
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
 }
 
 model Follows {
