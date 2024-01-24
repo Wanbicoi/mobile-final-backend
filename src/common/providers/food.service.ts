@@ -44,7 +44,7 @@ export class FoodService {
     return user.favouriteFoods;
   }
 
-  findAll(
+  async findAll(
     skip: number,
     take: number,
     search: string,
@@ -52,7 +52,7 @@ export class FoodService {
     category: string,
     userId: number,
   ) {
-    const query: Prisma.FoodFindManyArgs = {
+    const foods = await this.prisma.food.findMany({
       where: {
         title: {
           contains: search,
@@ -62,14 +62,22 @@ export class FoodService {
       },
       include: {
         author: { select: { name: true, imageUrl: true } },
+        comments: {
+          include: { author: { select: { imageUrl: true, name: true } } },
+        },
+        _count: { select: { likers: true } },
       },
       orderBy: {
         createdAt: order,
       },
       skip,
       take,
-    };
-    return this.prisma.food.findMany(query);
+    });
+    return foods.map((food) => ({
+      ...food,
+      _count: undefined,
+      likers_count: food._count.likers,
+    }));
   }
 
   async update(
