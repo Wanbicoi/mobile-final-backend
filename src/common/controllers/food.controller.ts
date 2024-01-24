@@ -46,25 +46,16 @@ export class FoodController {
   @ApiQuery({ name: 'skip', required: false })
   @ApiQuery({ name: 'take', required: false })
   @ApiQuery({ name: 'search', required: false })
-  @ApiQuery({ name: 'order', required: false, example: 'asc' })
   @ApiQuery({ name: 'category', required: false, example: 'hello' })
   @Get('')
   findAll(
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
-    @Query('take', new DefaultValuePipe(20), ParseIntPipe) take: number,
+    @Query('take', new DefaultValuePipe(100000), ParseIntPipe) take: number,
     @Query('search') search: string,
-    @Query('order', new DefaultValuePipe('asc')) order: 'asc' | 'desc',
     @Query('category') category: string,
     @User() userId: number,
   ) {
-    return this.foodservice.findAll(
-      skip,
-      take,
-      search,
-      order,
-      category,
-      userId,
-    );
+    return this.foodservice.findAll(skip, take, search, category, userId);
   }
 
   @Get('favourites')

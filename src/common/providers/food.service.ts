@@ -60,17 +60,15 @@ export class FoodService {
     skip: number,
     take: number,
     search: string,
-    order: 'asc' | 'desc',
     category: string,
     userId: number,
   ) {
-    const foods = await this.prisma.food.findMany({
+    const query = {
       where: {
         title: {
           contains: search,
-          // mode: 'insensitive',
+          mode: 'insensitive',
         },
-        categories: { some: { name: { equals: category } } },
       },
       include: {
         author: { select: { name: true, imageUrl: true } },
@@ -79,13 +77,15 @@ export class FoodService {
         },
         _count: { select: { likers: true } },
       },
-      orderBy: {
-        createdAt: order,
-      },
       skip,
       take,
-    });
-    return foods.map((food) => ({
+    };
+    if (category) {
+      //@ts-ignore
+      query.where.categories = { some: { name: { equals: category } } };
+    }
+    const foods = await this.prisma.food.findMany(query as any);
+    return foods.map((food: any) => ({
       ...food,
       _count: undefined,
       likers_count: food._count.likers,
