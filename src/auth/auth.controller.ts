@@ -12,7 +12,7 @@ export class AuthController {
   @Public()
   @Post()
   auth(@Body() autoDto: AuthDto) {
-    return this.authService.auth(autoDto.idToken);
+    return this.authService.auth(autoDto.idToken, autoDto.fcmToken);
   }
 
   @Public()

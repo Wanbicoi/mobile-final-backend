@@ -10,7 +10,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     @InjectFirebaseAdmin() private readonly firebase: FirebaseAdmin,
   ) {}
-  async auth(idToken: string) {
+  async auth(idToken: string, fcmToken: string) {
     try {
       const { uid, email } = await this.firebase.auth.verifyIdToken(idToken);
       let existingUser = await this.prisma.user.findFirst({
@@ -20,7 +20,16 @@ export class AuthService {
         existingUser = await this.prisma.user.create({
           data: { uid, name: email },
         });
+
+      let existingUserFCMToken = await this.prisma.fCMToken.findFirst({
+        where: { token: fcmToken, userId: existingUser.id },
+      });
+      if (!existingUserFCMToken)
+        await this.prisma.fCMToken.create({
+          data: { userId: existingUser.id, token: fcmToken },
+        });
       return {
+        id: existingUser.id,
         accessToken: await this.jwtService.signAsync({ sub: existingUser.id }),
       };
     } catch (e) {
@@ -28,8 +37,8 @@ export class AuthService {
     }
   }
   async authTest() {
-    const user = await this.prisma.user.findUnique({
-      where: { uid: ';lkasjdfa;kj' },
+    const user = await this.prisma.user.findFirstOrThrow({
+      where: { name: '123@gmail.com' },
     });
     return this.jwtService.signAsync({ sub: user.id });
   }

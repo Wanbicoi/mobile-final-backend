@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Food, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database';
 import { UpdateBlogDto } from '../dtos';
+import { InjectFirebaseAdmin, FirebaseAdmin } from 'nestjs-firebase';
 
 @Injectable()
 export class FoodService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @InjectFirebaseAdmin() private readonly firebase: FirebaseAdmin,
+  ) {}
   async findOne(
     productWhereUniqueInput: Prisma.FoodWhereUniqueInput,
     userId: number,
@@ -94,8 +98,21 @@ export class FoodService {
     return this.prisma.food.delete({ where });
   }
 
-  like(where: Prisma.FoodWhereUniqueInput, liked: boolean, userId: number) {
-    return this.prisma.food.update({
+  async like(
+    where: Prisma.FoodWhereUniqueInput,
+    liked: boolean,
+    userId: number,
+  ) {
+    // const user = await this.prisma.user.findUnique({
+    //   where: { id: userId },
+    //   select: { fcmTokens: true },
+    // });
+    const tokens = await this.prisma.fCMToken.findMany();
+    await this.firebase.messaging.sendMulticast({
+      tokens: tokens.map((token) => token.token),
+      notification: { title: 'Thông báo', body: 'Someone like yours' },
+    });
+    return await this.prisma.food.update({
       where,
       data: {
         likers: {
