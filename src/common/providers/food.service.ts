@@ -50,6 +50,7 @@ export class FoodService {
     search: string,
     order: 'asc' | 'desc',
     category: string,
+    userId: number,
   ) {
     const query: Prisma.FoodFindManyArgs = {
       where: {
@@ -58,6 +59,9 @@ export class FoodService {
           // mode: 'insensitive',
         },
         categories: { some: { name: { equals: category } } },
+      },
+      include: {
+        author: { select: { name: true, imageUrl: true } },
       },
       orderBy: {
         createdAt: order,
