@@ -48,6 +48,7 @@ export class FoodController {
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'order', required: false, example: 'asc' })
   @ApiQuery({ name: 'category', required: false, example: 'hello' })
+  @Get('')
   findAll(
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
     @Query('take', new DefaultValuePipe(20), ParseIntPipe) take: number,
