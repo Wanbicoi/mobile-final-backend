@@ -19,7 +19,6 @@ import {
 } from 'src/common/dtos';
 import { FoodService } from 'src/common/providers';
 import { User } from 'src/decorators';
-import { Public } from 'src/decorators/public.decorator';
 
 @ApiTags('foods')
 @Controller('foods')
@@ -32,11 +31,13 @@ export class FoodController {
     return this.foodservice.create(
       {
         ...createFoodDto,
-        categories: {
-          connect: createFoodDto.categories.map((category) => ({
-            name: category,
-          })),
-        },
+        categories: !createFoodDto.categories
+          ? undefined
+          : {
+              connect: createFoodDto.categories.map((category) => ({
+                name: category,
+              })),
+            },
       },
       userId,
     );
