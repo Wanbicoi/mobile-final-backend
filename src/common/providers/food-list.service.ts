@@ -6,8 +6,11 @@ import { Prisma } from '@prisma/client';
 export class FoodListService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
+  async findAll() {
+    const productsCount = await this.prisma.foodList.count();
+    const skip = Math.floor(Math.random() * productsCount);
     return this.prisma.foodList.findMany({
+      skip,
       include: {
         foods: {
           select: { id: true, title: true, images: true, body: true },
